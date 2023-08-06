@@ -21,10 +21,15 @@ enum class Tdirection {
     up,
     down,
     left,
-    right
+    right,
+    none,
+    rotate
 };
 
 class TetrisPiece {
+private:
+    PieceArray piece;
+    int distanceToBottom;
 public:
     Tshape shape;
     constexpr PieceArray getPiece(Tshape shape) const{
@@ -63,22 +68,31 @@ public:
                           {1,0,0,0},
                           {0,0,0,0}}};
                 return piece;
+            default:
+                return piece;
         }
     }
 
-    TetrisPiece(Tshape shape) : shape(shape){
-        PieceArray piece = getPiece(shape);
+    TetrisPiece(Tshape shape) : shape(shape), piece(getPiece(shape)){
+        std::cout << "TetrisPiece constructor called" << std::endl;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++){
+                std::cout << piece[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
     }
 
+    auto operator[](int index) -> decltype(piece[index]) {
+        return piece[index];
+    }
     bool rowEmpty(int row);
     bool colEmpty(int col);
 
     void rotate();
     //try to move the piece in the given direction, return true if possible
     bool move(Tdirection direction);
-private:
-    PieceArray piece;
-    int distanceToBottom;
 };
 
 class TetrisBoard {
@@ -92,6 +106,8 @@ private:
 public:
     using Iterator = CircularBuffer<std::array<bool, 10>>;
     TetrisBoard() : piece(Tshape::I), pieceX(3), pieceY(0){}
+    bool testRotateCollision();
+    bool testCollision(Tdirection direction);
     void printBoardRow(int row);
     void addPiece(TetrisPiece piece);
     void tick(Tdirection direction);

@@ -53,7 +53,8 @@ public:
         max_size(max_size){};
 
     auto operator[](int index) -> decltype(buffer[index]) {
-        return buffer[index];
+        int idx = (head + index) % max_size;
+        return buffer[idx];
     }
 
     // Add an item to this circular buffer.
